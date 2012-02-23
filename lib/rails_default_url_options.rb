@@ -31,7 +31,7 @@ unless defined?(DefaultUrlOptions)
   DefaultUrlOptions = defined?(HashWithIndifferentAccess) ? HashWithIndifferentAccess.new : Hash.new
 
   def DefaultUrlOptions.version
-    '1.1.0'
+    '1.2.0'
   end
 
   def DefaultUrlOptions.configure(request = {})
