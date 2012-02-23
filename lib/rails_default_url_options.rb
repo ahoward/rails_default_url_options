@@ -31,7 +31,7 @@ unless defined?(DefaultUrlOptions)
   DefaultUrlOptions = defined?(HashWithIndifferentAccess) ? HashWithIndifferentAccess.new : Hash.new
 
   def DefaultUrlOptions.version
-    '1.0.0'
+    '1.1.0'
   end
 
   def DefaultUrlOptions.configure(request = {})
@@ -105,7 +105,7 @@ unless defined?(DefaultUrlOptions)
       self[:host] = host.to_s.gsub(/^www\./, '')
     end
 
-    keys.each{|key| delete(key) unless self[key]}
+    keys.each{|key| delete(key) if self[key].nil?}
 
     self
   end
