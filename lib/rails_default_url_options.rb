@@ -130,16 +130,14 @@ end
 
 
 if defined?(Rails)
-## sane defaults
-#
-  DefaultUrlOptions.configure(
-    :host => '0.0.0.0',
-    :port => 3000
-  )
-
 ##
 #
   def DefaultUrlOptions.install_before_filter!
+    DefaultUrlOptions.configure(
+      :host => '0.0.0.0',
+      :port => 3000
+    ) unless DefaultUrlOptions.configured?
+
     if defined?(::ActionController::Base)
       ::ActionController::Base.module_eval do
         prepend_before_filter do |controller|
