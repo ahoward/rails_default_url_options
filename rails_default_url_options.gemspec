@@ -3,7 +3,7 @@
 
 Gem::Specification::new do |spec|
   spec.name = "rails_default_url_options"
-  spec.version = "1.3.1"
+  spec.version = "1.3.2"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "rails_default_url_options"
   spec.description = "description: rails_default_url_options kicks the ass"
