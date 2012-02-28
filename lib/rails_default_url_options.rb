@@ -56,7 +56,9 @@ unless defined?(DefaultUrlOptions)
   # force action_mailer to not lick balls
   #
     Rails.configuration.action_mailer.default_url_options = default_url_options
-    ActionMailer::Base.default_url_options = default_url_options
+    if ActionMailer::Base.respond_to?('default_url_options=')
+      ActionMailer::Base.default_url_options = default_url_options
+    end
 
     default_url_options
   end
