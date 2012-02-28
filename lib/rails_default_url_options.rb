@@ -31,7 +31,7 @@ unless defined?(DefaultUrlOptions)
   DefaultUrlOptions = defined?(HashWithIndifferentAccess) ? HashWithIndifferentAccess.new : Hash.new
 
   def DefaultUrlOptions.version
-    '1.2.0'
+    '1.3.0'
   end
 
   def DefaultUrlOptions.configure(request = {})
@@ -130,6 +130,13 @@ end
 
 
 if defined?(Rails)
+## sane defaults
+#
+  DefaultUrlOptions.configure(
+    :host => '0.0.0.0',
+    :port => 3000
+  )
+
 ##
 #
   def DefaultUrlOptions.install_before_filter!
