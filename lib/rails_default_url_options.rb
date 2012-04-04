@@ -28,7 +28,7 @@
 
 unless defined?(DefaultUrlOptions)
 
-  DefaultUrlOptions = defined?(HashWithIndifferentAccess) ? HashWithIndifferentAccess.new : Hash.new
+  DefaultUrlOptions = Hash.new
 
   def DefaultUrlOptions.version
     '1.3.2'
