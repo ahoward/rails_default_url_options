@@ -13,7 +13,7 @@ gem install rails_default_url_options
 
 From your `Gemfile`:
 
-```bash
+```ruby
 gem 'rails_default_url_options'
 ```
 
@@ -30,7 +30,7 @@ DefaultUrlOptions.configure (
     when 'production'
       {
         :host     => 'app.com',
-        :port     => false,     # no ports allowed in this guy!
+        :port     => false,     # no ports allowed in this one!
         :protocol => 'https'
       }
     when 'staging'
