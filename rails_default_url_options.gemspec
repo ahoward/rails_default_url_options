@@ -3,13 +3,14 @@
 
 Gem::Specification::new do |spec|
   spec.name = "rails_default_url_options"
-  spec.version = "1.4.0"
+  spec.version = "1.5.0"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "rails_default_url_options"
   spec.description = "description: rails_default_url_options kicks the ass"
 
   spec.files =
-["Rakefile",
+["README.md",
+ "Rakefile",
  "lib",
  "lib/rails_default_url_options.rb",
  "rails_default_url_options.gemspec"]
@@ -20,6 +21,8 @@ Gem::Specification::new do |spec|
 
   spec.test_files = nil
 
+  
+    spec.add_dependency(*["map", " >= 6.0.0"])
   
 
   spec.extensions.push(*[])

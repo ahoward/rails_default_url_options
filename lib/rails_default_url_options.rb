@@ -28,11 +28,25 @@
 
 unless defined?(DefaultUrlOptions)
 
-  DefaultUrlOptions = Hash.new
+  DefaultUrlOptions = (
+    begin
+      require 'map'
+      Map.new
+    rescue
+      Hash.new
+    end
+  )
 
   def DefaultUrlOptions.version
-    '1.4.0'
+    '1.5.0'
   end
+
+  def DefaultUrlOptions.dependencies
+    {
+      'map'               => [ 'map'               , ' >= 6.0.0' ] ,
+    }
+  end
+
 
   def DefaultUrlOptions.configure(request = {})
     default_url_options = DefaultUrlOptions
