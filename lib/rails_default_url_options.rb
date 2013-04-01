@@ -37,7 +37,7 @@ unless defined?(DefaultUrlOptions)
   )
 
   def DefaultUrlOptions.version
-    '1.6.0'
+    '1.7.0'
   end
 
   def DefaultUrlOptions.dependencies
@@ -48,6 +48,8 @@ unless defined?(DefaultUrlOptions)
 
   def DefaultUrlOptions.configure(request = {})
     default_url_options = DefaultUrlOptions
+
+    default_url_options.clear
 
     if request.is_a?(Hash)
       protocol = request[:protocol] || request['protocol']
@@ -115,10 +117,6 @@ unless defined?(DefaultUrlOptions)
 
       when /http/i
         delete(:port) if port.to_s == '80'
-    end
-
-    if host.to_s =~ /^www\./
-      self[:host] = host.to_s.gsub(/^www\./, '')
     end
 
     keys.each{|key| delete(key) if self[key].nil?}
