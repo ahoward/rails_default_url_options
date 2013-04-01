@@ -29,21 +29,19 @@
 unless defined?(DefaultUrlOptions)
 
   DefaultUrlOptions = (
-    begin
-      require 'map'
-      Map.new
-    rescue
+    if defined?(HashWithIndifferentAccess)
+      HashWithIndifferentAccess.new
+    else
       Hash.new
     end
   )
 
   def DefaultUrlOptions.version
-    '1.5.0'
+    '1.6.0'
   end
 
   def DefaultUrlOptions.dependencies
     {
-      'map'               => [ 'map'               , ' >= 6.0.0' ] ,
     }
   end
 
@@ -75,6 +73,8 @@ unless defined?(DefaultUrlOptions)
     end
 
     default_url_options
+  ensure
+    deep_symbolize_keys! if defined?(deep_symbolize_keys!)
   end
 
   def DefaultUrlOptions.configure!(request = {})
