@@ -28,21 +28,14 @@
 
 unless defined?(DefaultUrlOptions)
 
-  DefaultUrlOptions = (
-    if defined?(HashWithIndifferentAccess)
-      HashWithIndifferentAccess.new
-    else
-      Hash.new
-    end
-  )
+  DefaultUrlOptions = Hash.new
 
   def DefaultUrlOptions.version
-    '1.7.0'
+    '2.0.0'
   end
 
   def DefaultUrlOptions.dependencies
-    {
-    }
+    {}
   end
 
 
@@ -76,7 +69,10 @@ unless defined?(DefaultUrlOptions)
 
     default_url_options
   ensure
-    deep_symbolize_keys! if defined?(deep_symbolize_keys!)
+    keys.each do |key|
+      next if key.is_a?(Symbol)
+      self[key.to_s.to_sym] = self.fetch(key)
+    end
   end
 
   def DefaultUrlOptions.configure!(request = {})
