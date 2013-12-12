@@ -31,7 +31,7 @@ unless defined?(DefaultUrlOptions)
   DefaultUrlOptions = Hash.new
 
   def DefaultUrlOptions.version
-    '2.0.0'
+    '2.1.0'
   end
 
   def DefaultUrlOptions.dependencies
@@ -154,7 +154,12 @@ if defined?(Rails)
           unless controller.respond_to?(:configure_default_url_options!)
             unless DefaultUrlOptions.configured?
               request = controller.send(:request)
-              DefaultUrlOptions.configure!(request)
+
+              if Rails.env.production?
+                DefaultUrlOptions.configure!(request)
+              else
+                DefaultUrlOptions.configure(request)
+              end
             end
           end
         end

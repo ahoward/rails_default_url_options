@@ -59,8 +59,8 @@ end
 
 task :gemspec do
   ignore_extensions = ['git', 'svn', 'tmp', /sw./, 'bak', 'gem']
-  ignore_directories = ['pkg']
-  ignore_files = ['test/log', 'a.rb'] + Dir['db/*'] + %w'db'
+  ignore_directories = ['pkg', 'db']
+  ignore_files = ['test/log', 'test/db.yml', 'a.rb', 'b.rb'] + Dir['db/*'] + %w'db'
 
   shiteless = 
     lambda do |list|
@@ -90,6 +90,7 @@ task :gemspec do
   test_files  = test(?e, "test/#{ lib }.rb") ? "test/#{ lib }.rb" : nil
   summary     = object.respond_to?(:summary) ? object.summary : "summary: #{ lib } kicks the ass"
   description = object.respond_to?(:description) ? object.description : "description: #{ lib } kicks the ass"
+  license = object.respond_to?(:license) ? object.license : "same as ruby's"
 
   if This.extensions.nil?
     This.extensions = []
@@ -127,6 +128,7 @@ task :gemspec do
             spec.platform = Gem::Platform::RUBY
             spec.summary = <%= lib.inspect %>
             spec.description = <%= description.inspect %>
+            spec.license = <%= license.inspect %>
 
             spec.files =\n<%= files.sort.pretty_inspect %>
             spec.executables = <%= executables.inspect %>
@@ -293,7 +295,7 @@ BEGIN {
 
 # discover full path to this ruby executable
 #
-  c = RbConfig::CONFIG
+  c = Config::CONFIG
   bindir = c["bindir"] || c['BINDIR']
   ruby_install_name = c['ruby_install_name'] || c['RUBY_INSTALL_NAME'] || 'ruby'
   ruby_ext = c['EXEEXT'] || ''
