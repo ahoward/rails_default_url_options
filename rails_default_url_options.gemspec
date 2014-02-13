@@ -6,7 +6,7 @@ Gem::Specification::new do |spec|
   spec.version = "2.0.0"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "rails_default_url_options"
-  spec.description = "description: rails_default_url_options kicks the ass"
+  spec.description = "you really can have default_url_options everywhere.  even in mailers."
 
   spec.files =
 ["README.md",
