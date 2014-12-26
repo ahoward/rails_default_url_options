@@ -24,14 +24,14 @@
 # with this approach you will always generate absolute links for mailers and,
 # when those emails are triggered from an http request they will be sent
 # pointing back to that server.  note that this also means emails sent in
-# development will correctly point back to http://0.0.0.0:3000, etc.
+# development will correctly point back to http://127.0.0.1:3000, etc.
 
 unless defined?(DefaultUrlOptions)
 
   DefaultUrlOptions = Hash.new
 
   def DefaultUrlOptions.version
-    '2.1.0'
+    '3.0.0'
   end
 
   def DefaultUrlOptions.dependencies
@@ -144,7 +144,7 @@ if defined?(Rails)
 #
   def DefaultUrlOptions.install_before_filter!
     DefaultUrlOptions.configure(
-      :host => '0.0.0.0',
+      :host => '127.0.0.1',
       :port => 3000
     ) unless DefaultUrlOptions.configured?
 
