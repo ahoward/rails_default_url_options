@@ -150,23 +150,31 @@ if defined?(Rails)
 
     if defined?(::ActionController::Base)
       ::ActionController::Base.module_eval do
-        prepend_before_filter do |controller|
-          unless controller.respond_to?(:configure_default_url_options!)
-            unless DefaultUrlOptions.configured?
-              request = controller.send(:request)
-
-              if Rails.env.production?
-                DefaultUrlOptions.configure!(request)
-              else
-                DefaultUrlOptions.configure(request)
-              end
-            end
+        if Rails::VERSION::MAJOR >= 5
+          prepend_before_action do |controller|
+            set_default_url_options(controller)
+          end
+        else
+          prepend_before_filter do |controller|
+            set_default_url_options(controller)
           end
         end
       end
     end
   end
 
+  def set_default_url_options(controller)
+    unless controller.respond_to?(:configure_default_url_options!)
+      unless DefaultUrlOptions.configured?
+        request = controller.send(:request)
+        if Rails.env.production?
+          DefaultUrlOptions.configure!(request)
+        else
+          DefaultUrlOptions.configure(request)
+        end
+      end
+    end
+  end
 ##
 #
   if defined?(Rails::Engine)
