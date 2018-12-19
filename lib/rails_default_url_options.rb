@@ -31,7 +31,7 @@ unless defined?(DefaultUrlOptions)
   DefaultUrlOptions = Hash.new
 
   def DefaultUrlOptions.version
-    '3.0.0'
+    '5.0.0'
   end
 
   def DefaultUrlOptions.dependencies
@@ -150,7 +150,9 @@ if defined?(Rails)
 
     if defined?(::ActionController::Base)
       ::ActionController::Base.module_eval do
-        prepend_before_filter do |controller|
+        install_method = respond_to?(:prepend_before_filter) ? :prepend_before_filter : :prepend_before_action
+
+        send(install_method) do |controller|
           unless controller.respond_to?(:configure_default_url_options!)
             unless DefaultUrlOptions.configured?
               request = controller.send(:request)

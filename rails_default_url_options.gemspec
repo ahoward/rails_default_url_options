@@ -3,16 +3,17 @@
 
 Gem::Specification::new do |spec|
   spec.name = "rails_default_url_options"
-  spec.version = "3.0.0"
+  spec.version = "5.0.0"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "rails_default_url_options"
   spec.description = "description: rails_default_url_options kicks the ass"
-  spec.license = "same as ruby's"
+  spec.license = "Ruby"
 
   spec.files =
 ["README.md",
  "Rakefile",
  "lib",
+ "lib/rails_default_url_options",
  "lib/rails_default_url_options.rb",
  "rails_default_url_options.gemspec"]
 
