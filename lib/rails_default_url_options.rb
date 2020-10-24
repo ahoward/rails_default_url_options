@@ -7,13 +7,13 @@
 #
 # 2) dynamically configure these defaults on the first request seen.
 #
-# all we require to do this is a smart hash and simple before_filter.  save
+# all we require to do this is a smart hash and simple before_action.  save
 # this file as 'config/intiializers/deafult_url_options.rb' and add this
 # before filter to your application_controller.rb
 #
 # class ApplicationController < ActionController::Base
 #
-#   before_filter :configure_default_url_options!
+#   before_action :configure_default_url_options!
 #
 #   protected
 #     def configure_default_url_options!
@@ -31,7 +31,7 @@ unless defined?(DefaultUrlOptions)
   DefaultUrlOptions = Hash.new
 
   def DefaultUrlOptions.version
-    '5.0.0'
+    '6.0.0'
   end
 
   def DefaultUrlOptions.dependencies
@@ -39,7 +39,7 @@ unless defined?(DefaultUrlOptions)
   end
 
 
-  def DefaultUrlOptions.configure(request = {})
+  def DefaultUrlOptions.configure(request = {}, &block)
     default_url_options = DefaultUrlOptions
 
     default_url_options.clear
@@ -60,19 +60,15 @@ unless defined?(DefaultUrlOptions)
 
     normalize!
 
-  # force action_mailer to not lick balls
+  # force action_mailer to not suck so bad 
   #
     Rails.configuration.action_mailer.default_url_options = default_url_options
+
     if ActionMailer::Base.respond_to?('default_url_options=')
       ActionMailer::Base.default_url_options = default_url_options
     end
 
     default_url_options
-  ensure
-    keys.each do |key|
-      next if key.is_a?(Symbol)
-      self[key.to_s.to_sym] = self.fetch(key)
-    end
   end
 
   def DefaultUrlOptions.configure!(request = {})
@@ -115,7 +111,18 @@ unless defined?(DefaultUrlOptions)
         delete(:port) if port.to_s == '80'
     end
 
-    keys.each{|key| delete(key) if self[key].nil?}
+    keys.each do |key|
+      if self[key].nil?
+        delete(key)
+        next
+      end
+
+      if key.is_a?(Symbol)
+        next
+      end
+
+      self[key.to_s.to_sym] = self.delete(key)
+    end
 
     self
   end
@@ -132,56 +139,88 @@ unless defined?(DefaultUrlOptions)
     DefaultUrlOptions[:port]
   end
 
+  def DefaultUrlOptions.domain
+    case host
+      when '0.0.0.0', '127.0.0.1'
+        'localhost'
+      when /\A[\d.]+\Z/iomx
+        host
+      else
+        host.split('.').last(2).join('.')
+    end
+  end
+
   def DefaultUrlOptions.to_yaml(*args, &block)
     Hash.new.update(self).to_yaml(*args, &block)
   end
 
+  def DefaultUrlOptions.callbacks
+    @callbacks ||= []
+  end
 end
 
 
 if defined?(Rails)
-##
-#
-  def DefaultUrlOptions.install_before_filter!
-    DefaultUrlOptions.configure(
-      :host => '127.0.0.1',
-      :port => 3000
-    ) unless DefaultUrlOptions.configured?
+  def DefaultUrlOptions.autoconfigure!(&block)
+    unless DefaultUrlOptions.configured?
+      DefaultUrlOptions.configure(
+        :host => 'localhost',
+        :port => 3000
+      )
+    end
 
+    if block
+      DefaultUrlOptions.callbacks.push(block)
+    end
+
+    DefaultUrlOptions.install_before_action!
+  end
+
+  def DefaultUrlOptions.autoconfigure(&block)
+    DefaultUrlOptions.autoconfigure!(&block)
+  end
+
+  def DefaultUrlOptions.install_before_action!
     if defined?(::ActionController::Base)
       ::ActionController::Base.module_eval do
-        install_method = respond_to?(:prepend_before_filter) ? :prepend_before_filter : :prepend_before_action
-
-        send(install_method) do |controller|
-          unless controller.respond_to?(:configure_default_url_options!)
-            unless DefaultUrlOptions.configured?
-              request = controller.send(:request)
-
-              if Rails.env.production?
-                DefaultUrlOptions.configure!(request)
-              else
-                DefaultUrlOptions.configure(request)
-              end
+        def configure_default_url_options!
+          unless DefaultUrlOptions.configured?
+            if Rails.env.production?
+              DefaultUrlOptions.configure!(request)
+            else
+              DefaultUrlOptions.configure(request)
             end
+
+            DefaultUrlOptions.callbacks.each do |block|
+              block.call
+            end
+
+            DefaultUrlOptions.callbacks.clear
           end
         end
+
+        prepend_before_action = respond_to?(:prepend_before_filter) ? :prepend_before_filter : :prepend_before_action
+
+        send(prepend_before_action, :configure_default_url_options!)
       end
     end
   end
 
-##
+=begin
 #
   if defined?(Rails::Engine)
     class Engine < Rails::Engine
       config.before_initialize do
         ActiveSupport.on_load(:action_controller) do
-          DefaultUrlOptions.install_before_filter!
+          DefaultUrlOptions.install_before_action!
         end
       end
     end
   else
-    DefaultUrlOptions.install_before_filter!
+    DefaultUrlOptions.install_before_action!
   end
+=end
+
 end
 
 ::Rails_default_url_options = ::DefaultUrlOptions

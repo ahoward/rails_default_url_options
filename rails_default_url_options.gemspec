@@ -3,7 +3,7 @@
 
 Gem::Specification::new do |spec|
   spec.name = "rails_default_url_options"
-  spec.version = "5.0.0"
+  spec.version = "6.0.0"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "rails_default_url_options"
   spec.description = "description: rails_default_url_options kicks the ass"
@@ -13,7 +13,6 @@ Gem::Specification::new do |spec|
 ["README.md",
  "Rakefile",
  "lib",
- "lib/rails_default_url_options",
  "lib/rails_default_url_options.rb",
  "rails_default_url_options.gemspec"]
 
