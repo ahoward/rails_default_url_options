@@ -31,7 +31,7 @@ unless defined?(DefaultUrlOptions)
   DefaultUrlOptions = Hash.new
 
   def DefaultUrlOptions.version
-    '6.0.0'
+    '6.0.1'
   end
 
   def DefaultUrlOptions.dependencies

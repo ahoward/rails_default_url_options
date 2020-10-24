@@ -3,7 +3,7 @@
 
 Gem::Specification::new do |spec|
   spec.name = "rails_default_url_options"
-  spec.version = "6.0.0"
+  spec.version = "6.0.1"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "rails_default_url_options"
   spec.description = "description: rails_default_url_options kicks the ass"
@@ -26,7 +26,6 @@ Gem::Specification::new do |spec|
 
   spec.extensions.push(*[])
 
-  spec.rubyforge_project = "codeforpeople"
   spec.author = "Ara T. Howard"
   spec.email = "ara.t.howard@gmail.com"
   spec.homepage = "https://github.com/ahoward/rails_default_url_options"

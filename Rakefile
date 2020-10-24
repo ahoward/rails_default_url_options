@@ -1,4 +1,3 @@
-This.rubyforge_project = 'codeforpeople'
 This.author = "Ara T. Howard"
 This.email = "ara.t.howard@gmail.com"
 This.homepage = "https://github.com/ahoward/#{ This.lib }"
@@ -143,7 +142,6 @@ task :gemspec do
 
             spec.extensions.push(*<%= extensions.inspect %>)
 
-            spec.rubyforge_project = <%= This.rubyforge_project.inspect %>
             spec.author = <%= This.author.inspect %>
             spec.email = <%= This.email.inspect %>
             spec.homepage = <%= This.homepage.inspect %>
@@ -224,12 +222,6 @@ task :release => [:clean, :gemspec, :gem] do
   raise "no gems?" if gems.size < 1
 
   cmd = "gem push #{ This.gem }"
-  puts cmd
-  puts
-  system(cmd)
-  abort("cmd(#{ cmd }) failed with (#{ $?.inspect })") unless $?.exitstatus.zero?
-
-  cmd = "rubyforge login && rubyforge add_release #{ This.rubyforge_project } #{ This.lib } #{ This.version } #{ This.gem }"
   puts cmd
   puts
   system(cmd)
