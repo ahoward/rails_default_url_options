@@ -34,10 +34,13 @@ unless defined?(DefaultUrlOptions)
     '6.0.1'
   end
 
+  def DefaultUrlOptions.summary
+    'KISS and globablly available default_url_options in Rails for foreground and background applications'
+  end
+
   def DefaultUrlOptions.dependencies
     {}
   end
-
 
   def DefaultUrlOptions.configure(request = {}, &block)
     default_url_options = DefaultUrlOptions

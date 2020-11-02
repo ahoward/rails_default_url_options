@@ -267,6 +267,11 @@ BEGIN {
 
 # extract name from _lib
 #
+# FIXME
+#
+#
+  This.name = 'DefaultUrlOptions'
+=begin
   lines = IO.binread(This._lib).split("\n")
   re = %r`\A \s* (module|class) \s+ ([^\s]+) \s* \z`iomx
   name = nil
@@ -281,6 +286,7 @@ BEGIN {
     abort "could not extract `name` from #{ This._lib }"
   end
   This.name = name
+=end
 
 # now, fully grok This 
 #
