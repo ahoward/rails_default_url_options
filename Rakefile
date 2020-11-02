@@ -2,6 +2,9 @@ This.author = "Ara T. Howard"
 This.email = "ara.t.howard@gmail.com"
 This.homepage = "https://github.com/ahoward/#{ This.lib }"
 
+task :license do
+  open('LICENSE', 'w'){|fd| fd.puts "Ruby"}
+end
 
 task :default do
   puts((Rake::Task.tasks.map{|task| task.name.gsub(/::/,':')} - ['default']).sort)
@@ -28,7 +31,7 @@ def run_tests!(which = nil)
 
   test_rbs.each_with_index do |test_rb, index|
     testno = index + 1
-    command = "#{ File.basename(This.ruby) } -I ./lib -I ./test/lib #{ test_rb }"
+    command = "#{ This.ruby } -w -I ./lib -I ./test/lib #{ test_rb }"
 
     puts
     say(div, :color => :cyan, :bold => true)
@@ -58,8 +61,8 @@ end
 
 task :gemspec do
   ignore_extensions = ['git', 'svn', 'tmp', /sw./, 'bak', 'gem']
-  ignore_directories = ['pkg', 'db']
-  ignore_files = ['test/log', 'test/db.yml', 'a.rb', 'b.rb'] + Dir['db/*'] + %w'db'
+  ignore_directories = ['pkg']
+  ignore_files = ['test/log']
 
   shiteless = 
     lambda do |list|
@@ -86,10 +89,10 @@ task :gemspec do
   files       = shiteless[Dir::glob("**/**")]
   executables = shiteless[Dir::glob("bin/*")].map{|exe| File.basename(exe)}
   #has_rdoc    = true #File.exist?('doc')
-  test_files  = test(?e, "test/#{ lib }.rb") ? "test/#{ lib }.rb" : nil
+  test_files  = "test/#{ lib }.rb" if File.file?("test/#{ lib }.rb")
   summary     = object.respond_to?(:summary) ? object.summary : "summary: #{ lib } kicks the ass"
   description = object.respond_to?(:description) ? object.description : "description: #{ lib } kicks the ass"
-  license = object.respond_to?(:license) ? object.license : "Ruby"
+  license     = object.respond_to?(:license) ? object.license : "Ruby"
 
   if This.extensions.nil?
     This.extensions = []
@@ -100,7 +103,6 @@ task :gemspec do
   end
   extensions = [extensions].flatten.compact
 
-# TODO
   if This.dependencies.nil?
     dependencies = []
   else
@@ -188,8 +190,8 @@ task :readme do
   end
 
   template = 
-    if test(?e, 'readme.erb')
-      Template{ IO.read('readme.erb') }
+    if test(?e, 'README.erb')
+      Template{ IO.read('README.erb') }
     else
       Template {
         <<-__
@@ -210,11 +212,9 @@ task :readme do
   open("README", "w"){|fd| fd.puts template}
 end
 
-
 task :clean do
   Dir[File.join(This.pkgdir, '**/**')].each{|entry| Fu.rm_rf(entry)}
 end
-
 
 task :release => [:clean, :gemspec, :gem] do
   gems = Dir[File.join(This.pkgdir, '*.gem')].flatten
@@ -254,36 +254,44 @@ BEGIN {
   This.file = File.expand_path(__FILE__)
   This.dir = File.dirname(This.file)
   This.pkgdir = File.join(This.dir, 'pkg')
+  This.lib = File.basename(Dir.pwd).sub(/[-].*$/, '')
 
-# grok lib
+# load _lib
 #
-  lib = ENV['LIB']
-  unless lib
-    lib = File.basename(Dir.pwd).sub(/[-].*$/, '')
+  _lib = ["./lib/#{ This.lib }/_lib.rb", "./lib/#{ This.lib }.rb"].detect{|l| test(?s, l)}
+  unless _lib
+    abort "could not find a _lib in ./lib!?"
   end
-  This.lib = lib
+  This._lib = _lib
+  require This._lib
 
-# grok version
+# extract name from _lib
 #
-  version = ENV['VERSION']
-  unless version
-    require "./lib/#{ This.lib }"
-    This.name = lib.capitalize
-    This.object = eval(This.name)
-    version = This.object.send(:version)
+  lines = IO.binread(This._lib).split("\n")
+  re = %r`\A \s* (module|class) \s+ ([^\s]+) \s* \z`iomx
+  name = nil
+  lines.each do |line|
+    match = line.match(re)
+    if match
+      name = match.to_a.last
+      break
+    end
   end
+  unless name
+    abort "could not extract `name` from #{ This._lib }"
+  end
+  This.name = name
+
+# now, fully grok This 
+#
+  This.object = eval(This.name)
+
+  version = This.object.send(:version)
   This.version = version
 
-# see if dependencies are export by the module
-#
   if This.object.respond_to?(:dependencies)
     This.dependencies = This.object.dependencies
   end
-
-# we need to know the name of the lib an it's version
-#
-  abort('no lib') unless This.lib
-  abort('no version') unless This.version
 
 # discover full path to this ruby executable
 #
